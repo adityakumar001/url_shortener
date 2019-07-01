@@ -1,0 +1,75 @@
+{% load static from staticfiles %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TinyMe- Register</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+
+</head>
+
+<body style="background:white">
+<div class="container-fluid">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <a href="{% url 'url_shortener:home' %}"><img src="{% static 'logo.png'%}" style="float:right"/></a>
+            <form method="post" id="register_form" onsubmit=" validateForm()" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input placeholder="Email address" class="form-control" type="email" id="email" name="email"
+                           required></div>
+                <div class="form-group">
+                    <input placeholder="Full Name" class="form-control" type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <input placeholder="Password" class="form-control" type="password" id="password" name="password"
+                           required>
+                </div>
+                <div class="form-group">
+                    <input placeholder="Re-Enter Password" class="form-control" type="password" id="repassword"
+                           name="repassword" required>
+                </div>
+                <input type="submit" class="btn btn-primary btn-dark" id="submit" name="submit" value="Register">
+            </form>
+            <div class="alert alert-danger" style="display:None" id="jalert">{{ error }}</div>
+            {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>
+<script>
+        function validateForm() {
+            console.log("CLicked!!!")
+            var email = document.getElementById('email').value;
+            var name = document.getElementById('name').value;
+            var pass1 = document.getElementById('password').value;
+            var pass2 = document.getElementById('repassword').value;
+            var reEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            var reName = /^(([^\d\s\W_]|[\u00C0-\u017F])+){2,}(['’,\-\.]+)?(([^\d\s\W_]|[\u00C0-\u017F]))*(([ ]+){0,1}((([^\d\s\W_]|[\u00C0-\u017F])+){2,})(['’\-,\.]+)?((([^\d\s\W_]|[\u00C0-\u017F])){2,})?)*$/;
+
+            if (!email.match(reEmail)) {
+                document.getElementById('jalert').style.display = "block"
+                document.getElementById('jalert').innerHTML = "Email is invalid!!"
+                event.preventDefault();
+            } else if (!name.match(reName)) {
+                document.getElementById('jalert').style.display = "block"
+                document.getElementById('jalert').innerHTML = "Please enter a valid name!!"
+                event.preventDefault();
+            } else if (pass1 !== pass2) {
+                document.getElementById('jalert').style.display = "block"
+                document.getElementById('jalert').innerHTML = "The two passwords don't match!!"
+                event.preventDefault();
+            } else {
+                return true;
+
+            }
+       }
+
+</script>
+</body>
+
+</html>

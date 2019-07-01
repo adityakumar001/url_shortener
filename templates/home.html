@@ -1,0 +1,139 @@
+{% load static from staticfiles %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TinyMe</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+</head>
+
+<body>
+<img src="{% static 'logo.png' %}" class="logo"/>
+<div class="container">
+    {% if request.session.authenticated %}
+    <a href="{% url 'url_shortener:sign_out' %}" style="float:right">Sign-Out</a> {% endif %}
+
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <form method="post" enctype="application/x-www-form-urlencoded">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="original_url">Original URL : </label>
+                    <input type="text" name="original_url" id="original_url" required class="form-control"
+                           placeholder="Paste URL here">
+                </div>
+
+                {% if request.session.authenticated %}
+                <div class="form-group" id="custom_div" style="display:none">
+                    <label for="shortened_url">Custom URL : </label>
+                    <input type="text" name="shortened_url" id="shortened_url" class="form-control"
+                           placeholder="Enter custom url...">
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" onclick="showCustom()" name="userGenerated" type="checkbox" value=""
+                           id="usergenerated">
+                    <label class="form-check-label" for="usergenerated">Create custom URL.</label>
+                </div>
+                {% endif %}
+
+                {% if error is not None %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
+                <input type="submit" onclick="buttonClicked()" class="btn btn-primary" name="submitbtn" id="submitbtn"
+                       value="Tiny Me!!">
+
+            </form>
+            {% if url is not None %}
+            <div class="alert alert-info" role="alert">
+                The generated url is : <a href="{{ url.short_url }}">localhost/{{ url.short_url }}</a>
+            </div>
+
+            <div class="alert alert-info" role="alert">The original link :
+                <a href="{{ url.short_url }}" style="word-wrap: break-word"> {{ url.original_url }} </a></div>
+            {% endif %} {% if not request.session.authenticated %}
+
+            <div class="alert alert-primary" role="alert">
+
+                <a href="{% url 'url_shortener:register' %}">Register For Free</a>
+                <span> / </span>
+                <a href="{% url 'url_shortener:sign_in' %}">Sign-In</a>. It lets you create custom URL's and keep track
+                of all the urls you have tinified !!
+
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-sm-2"></div>
+    </div>
+
+    {% if request.session.authenticated %}
+    <div class="row">
+
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10">
+
+            <table class="table auto-index">
+                <thead>
+                <tr>
+                    <th scope="col">Original URL</th>
+                    <th scope="col">Tiny</th>
+                    <th scope="col">Date/Time</th>
+                    <th scope="col">Options</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for url in urls %}
+                <tr>
+                    <td style="word-wrap:break-word"><a href="{{ url.original_url }}">{{ url.original_url }}</a></td>
+                    <td>{{ url.shortened_url }}</td>
+                    <td>{{ url.timestamp }}</td>
+                    <td>
+                        <a href="{% url 'url_shortener:delete_url' %}?shortened_url={{ url.shortened_url }}">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+        <div class="col-sm-1"></div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+        function showCustom() {
+            var display = document.getElementById("custom_div").style.display;
+            if (display === ("none")) {
+                document.getElementById("custom_div").style.display = "block";
+            } else {
+                document.getElementById("custom_div").style.display = "none";
+            }
+        }
+
+
+
+
+
+
+
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
